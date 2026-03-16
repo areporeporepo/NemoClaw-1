@@ -1,0 +1,25 @@
+nemoclaw-blueprint/policies/presets/npm.yaml
+  33a357f40f5d5236 19-20,28
+nemoclaw-blueprint/policies/presets/pypi.yaml
+  33a357f40f5d5236 19-20,28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "b499445b0a9dc773cc11dc8ce8eb4caeeb463149",
+  "prompts": {
+    "33a357f40f5d5236": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "90b7eac6-c02b-4d3c-9a61-3c38d96cc6c6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Anh Quang Nguyen <29374105+aprprprr@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 0,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
