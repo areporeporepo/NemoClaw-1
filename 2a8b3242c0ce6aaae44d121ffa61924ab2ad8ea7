@@ -1,0 +1,29 @@
+nemoclaw-blueprint/policies/presets/npm.yaml
+  33a357f40f5d5236 19-20,28
+nemoclaw-blueprint/policies/presets/pypi.yaml
+  33a357f40f5d5236 19-20,28
+bin/nemoclaw.js
+  33a357f40f5d5236 27,316-322
+bin/lib/onboard.js
+  33a357f40f5d5236 168-175,183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "2a8b3242c0ce6aaae44d121ffa61924ab2ad8ea7",
+  "prompts": {
+    "33a357f40f5d5236": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "90b7eac6-c02b-4d3c-9a61-3c38d96cc6c6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "anh nguyen <anh.nqqq@icloud.com>",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 2,
+      "accepted_lines": 24,
+      "overriden_lines": 0
+    }
+  }
+}
