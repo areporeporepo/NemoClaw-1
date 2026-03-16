@@ -1,0 +1,27 @@
+bin/lib/runner.js
+  33a357f40f5d5236 48-61
+bin/lib/onboard.js
+  33a357f40f5d5236 8,128
+bin/nemoclaw.js
+  33a357f40f5d5236 10,60,333
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.12",
+  "base_commit_sha": "31765d561dff8f1935968c473c9b477bf932be3d",
+  "prompts": {
+    "33a357f40f5d5236": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "90b7eac6-c02b-4d3c-9a61-3c38d96cc6c6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "anh nguyen <29374105+aprprprr@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 3,
+      "accepted_lines": 19,
+      "overriden_lines": 0
+    }
+  }
+}
