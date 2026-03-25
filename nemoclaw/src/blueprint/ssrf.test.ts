@@ -207,7 +207,8 @@ describe("isPrivateIp – IPv6 edge cases", () => {
     // zero address
     ["::0", false],
     // fd00::/8 boundaries
-    ["fcff::1", false], // fc00::/8 is NOT protected, only fd00::/8
+    ["fc00::1", true], // first address in fc00::/7 (ULA)
+    ["fcff::1", true], // still within fc00::/7
     ["fd00::0", true], // first address in fd00::/8
     ["fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true], // last address in fd00::/8
     ["fe00::1", false], // just above fd00::/8
