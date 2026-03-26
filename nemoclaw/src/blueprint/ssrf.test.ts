@@ -201,17 +201,18 @@ describe("isPrivateIp – CIDR boundary precision", () => {
 
 describe("isPrivateIp – IPv6 edge cases", () => {
   it.each([
-    // link-local and multicast are NOT in PRIVATE_NETWORKS — verify they're treated as public
-    ["fe80::1", false],
-    ["ff02::1", false],
+    // link-local, multicast, and unspecified are treated as private/internal for SSRF protection
+    ["fe80::1", true],
+    ["ff02::1", true],
     // zero address
-    ["::0", false],
-    // fd00::/8 boundaries
-    ["fc00::1", true], // first address in fc00::/7 (ULA)
-    ["fcff::1", true], // still within fc00::/7
-    ["fd00::0", true], // first address in fd00::/8
-    ["fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true], // last address in fd00::/8
-    ["fe00::1", false], // just above fd00::/8
+    ["::0", true],
+    // fc00::/7 (RFC 4193 Unique Local Addresses) boundaries
+    ["fbff::1", false], // just below fc00::/7
+    ["fc00::1", true], // first usable in fc00::/7 ULA range
+    ["fcff::1", true], // within fc00::/7 ULA range
+    ["fd00::0", true], // first address in fd00::/8 (within fc00::/7)
+    ["fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", true], // last address in fc00::/7 ULA range
+    ["fe00::1", false], // just above fc00::/7 (link-local starts at fe80::)
   ])("IPv6 %s → private=%s", (ip, expected) => {
     expect(isPrivateIp(ip)).toBe(expected);
   });
@@ -284,7 +285,7 @@ describe("validateEndpointUrl – URL parsing edge cases", () => {
     await expect(validateEndpointUrl(url)).resolves.toBe(url);
   });
 
-  it("allows URL with basic auth in hostname", async () => {
+  it("allows URL with userinfo/basic auth", async () => {
     mockPublicDns();
     // URL parser extracts hostname correctly even with userinfo
     const url = "https://user:pass@api.example.com/v1";
