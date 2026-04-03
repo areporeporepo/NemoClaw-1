@@ -50,7 +50,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=6dbb43f8"></script>
-    <script src="../_static/search-assets.bundle.js?v=0ad6c85c"></script>
+    <script src="../_static/search-assets.bundle.js?v=099b119e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
     <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
@@ -547,7 +547,7 @@ window.runMermaid = runMermaid;</script>
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 <aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">&#x1F514; NemoClaw is <strong>alpha software</strong>. APIs and behavior may change without notice. Do not use in production.</div>
+  <div class="bd-header-announcement__content">&#x1F514; NVIDIA NemoClaw is <strong>alpha software</strong>. APIs and behavior may change without notice. Do not use in production.</div>
 </aside>
 
   
@@ -1473,6 +1473,115 @@ The entrypoint starts as root for privilege separation, then drops to the <code 
 </div>
 </section>
 </section>
+<section id="gateway-authentication-controls">
+<h2>Gateway Authentication Controls<a class="headerlink" href="#gateway-authentication-controls" title="Link to this heading">#</a></h2>
+<p>The OpenClaw gateway authenticates devices that connect to the Control UI dashboard.
+NemoClaw hardens these defaults at image build time.</p>
+<section id="device-authentication">
+<h3>Device Authentication<a class="headerlink" href="#device-authentication" title="Link to this heading">#</a></h3>
+<p>Device authentication requires each connecting device to go through a pairing flow before it can interact with the gateway.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>Enabled. The gateway requires device pairing for all connections.</p></td>
+</tr>
+<tr class="row-odd"><td><p>What you can change</p></td>
+<td><p>Set <code class="docutils literal notranslate"><span class="pre">NEMOCLAW_DISABLE_DEVICE_AUTH=1</span></code> as a Docker build argument to disable device authentication. This is a build-time setting baked into <code class="docutils literal notranslate"><span class="pre">openclaw.json</span></code> and verified by hash at startup.</p></td>
+</tr>
+<tr class="row-even"><td><p>Risk if relaxed</p></td>
+<td><p>Disabling device auth allows any device on the network to connect to the gateway without proving identity. This is dangerous when combined with LAN-bind changes or cloudflared tunnels in remote deployments, resulting in an unauthenticated, publicly reachable dashboard.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Recommendation</p></td>
+<td><p>Keep device auth enabled (the default). Only disable it for headless or development environments where no untrusted devices can reach the gateway.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="insecure-auth-derivation">
+<h3>Insecure Auth Derivation<a class="headerlink" href="#insecure-auth-derivation" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">allowInsecureAuth</span></code> setting controls whether the gateway permits non-HTTPS authentication.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>Derived from the <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> scheme at build time. When the URL uses <code class="docutils literal notranslate"><span class="pre">http://</span></code> (local development), insecure auth is allowed. When it uses <code class="docutils literal notranslate"><span class="pre">https://</span></code> (remote or production), insecure auth is blocked.</p></td>
+</tr>
+<tr class="row-odd"><td><p>What you can change</p></td>
+<td><p>This is derived automatically from <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code>. Set <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> to an <code class="docutils literal notranslate"><span class="pre">https://</span></code> URL to enforce secure auth.</p></td>
+</tr>
+<tr class="row-even"><td><p>Risk if relaxed</p></td>
+<td><p>Allowing insecure auth over HTTPS defeats the purpose of TLS, because authentication tokens transit in cleartext.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Recommendation</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">https://</span></code> for any deployment accessible beyond <code class="docutils literal notranslate"><span class="pre">localhost</span></code>. The default local URL (<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:18789</span></code>) correctly allows insecure auth for local development.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="auto-pair-client-allowlist">
+<h3>Auto-Pair Client Allowlist<a class="headerlink" href="#auto-pair-client-allowlist" title="Link to this heading">#</a></h3>
+<p>The auto-pair watcher automatically approves device pairing requests from recognized clients, so you do not need to manually approve the Control UI.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>The watcher approves devices with <code class="docutils literal notranslate"><span class="pre">clientId</span></code> set to <code class="docutils literal notranslate"><span class="pre">openclaw-control-ui</span></code> or <code class="docutils literal notranslate"><span class="pre">clientMode</span></code> set to <code class="docutils literal notranslate"><span class="pre">webchat</span></code>. All other clients are rejected and logged.</p></td>
+</tr>
+<tr class="row-odd"><td><p>What you can change</p></td>
+<td><p>This is not a user-facing knob. The allowlist is defined in the entrypoint script.</p></td>
+</tr>
+<tr class="row-even"><td><p>Risk if relaxed</p></td>
+<td><p>Approving all device types without validation lets rogue or unexpected clients pair with the gateway unchallenged.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Recommendation</p></td>
+<td><p>No action needed. The entrypoint handles this automatically. If you see <code class="docutils literal notranslate"><span class="pre">[auto-pair]</span> <span class="pre">rejected</span> <span class="pre">unknown</span> <span class="pre">client=...</span></code> in the logs, investigate the source of the unexpected connection.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="cli-secret-redaction">
+<h3>CLI Secret Redaction<a class="headerlink" href="#cli-secret-redaction" title="Link to this heading">#</a></h3>
+<p>The CLI automatically redacts secret patterns (API keys, bearer tokens, provider credentials) from command output and error messages before logging them.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>Enabled. The runner redacts secrets from stdout, stderr, and thrown error messages.</p></td>
+</tr>
+<tr class="row-odd"><td><p>What you can change</p></td>
+<td><p>This is not a user-facing knob. The CLI enforces it on all command output paths.</p></td>
+</tr>
+<tr class="row-even"><td><p>Risk if relaxed</p></td>
+<td><p>Without redaction, secrets could appear in terminal scrollback, log files, or debug output shared in bug reports.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Recommendation</p></td>
+<td><p>No action needed. If you share <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">debug</span></code> output, verify that no secrets appear in the collected diagnostics.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
 <section id="inference-controls">
 <h2>Inference Controls<a class="headerlink" href="#inference-controls" title="Link to this heading">#</a></h2>
 <p>OpenShell routes all inference traffic through the gateway to isolate provider credentials from the sandbox.</p>
@@ -1645,6 +1754,10 @@ They provide guidance on which controls to keep tight or relax.</p>
 <td><p>Direct network access to an inference host bypasses credential isolation and usage tracking.</p></td>
 <td><p>Use OpenShell inference routing instead of adding hosts like <code class="docutils literal notranslate"><span class="pre">api.openai.com</span></code> or <code class="docutils literal notranslate"><span class="pre">api.anthropic.com</span></code> to the network policy.</p></td>
 </tr>
+<tr class="row-odd"><td><p>Disabling device auth for remote deployments</p></td>
+<td><p>Without device auth, any device on the network can connect to the gateway without pairing. Combined with a cloudflared tunnel, this makes the dashboard publicly accessible and unauthenticated.</p></td>
+<td><p>Keep <code class="docutils literal notranslate"><span class="pre">NEMOCLAW_DISABLE_DEVICE_AUTH</span></code> at its default (<code class="docutils literal notranslate"><span class="pre">0</span></code>). Only set it to <code class="docutils literal notranslate"><span class="pre">1</span></code> for local headless or development environments.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1737,6 +1850,13 @@ They provide guidance on which controls to keep tight or relax.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-root-user">Non-Root User</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#path-hardening">PATH Hardening</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-toolchain-removal">Build Toolchain Removal</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gateway-authentication-controls">Gateway Authentication Controls</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#device-authentication">Device Authentication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#insecure-auth-derivation">Insecure Auth Derivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-pair-client-allowlist">Auto-Pair Client Allowlist</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-secret-redaction">CLI Secret Redaction</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-controls">Inference Controls</a><ul class="nav section-nav flex-column">

@@ -50,7 +50,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=6dbb43f8"></script>
-    <script src="../_static/search-assets.bundle.js?v=0ad6c85c"></script>
+    <script src="../_static/search-assets.bundle.js?v=099b119e"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'deployment/deploy-to-remote-gpu';</script>
 
@@ -111,7 +111,7 @@
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 <aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">&#x1F514; NemoClaw is <strong>alpha software</strong>. APIs and behavior may change without notice. Do not use in production.</div>
+  <div class="bd-header-announcement__content">&#x1F514; NVIDIA NemoClaw is <strong>alpha software</strong>. APIs and behavior may change without notice. Do not use in production.</div>
 </aside>
 
   
@@ -491,6 +491,26 @@ To reconnect after closing the session, run the deploy command again:</p>
 </pre></div>
 </div>
 </section>
+<section id="remote-dashboard-access">
+<h2>Remote Dashboard Access<a class="headerlink" href="#remote-dashboard-access" title="Link to this heading">#</a></h2>
+<p>The NemoClaw dashboard validates the browser origin against an allowlist baked
+into the sandbox image at build time.  By default the allowlist only contains
+<code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:18789</span></code>.  When accessing the dashboard from a remote browser
+(for example through a Brev public URL or an SSH port-forward), set
+<code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> to the origin the browser will use <strong>before</strong> running setup:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">CHAT_UI_URL</span><span class="o">=</span><span class="s2">&quot;https://openclaw0-&lt;id&gt;.brevlab.com&quot;</span>
+<span class="gp">$ </span>nemoclaw<span class="w"> </span>deploy<span class="w"> </span>&lt;instance-name&gt;
+</pre></div>
+</div>
+<p>For SSH port-forwarding, the origin is typically <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:18789</span></code> (the
+default), so no extra configuration is needed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On Brev, set <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> in the launchable environment configuration so it is
+available when the setup script builds the sandbox image.  If <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> is
+not set on a headless host, <code class="docutils literal notranslate"><span class="pre">brev-setup.sh</span></code> prints a warning.</p>
+</div>
+</section>
 <section id="gpu-configuration">
 <h2>GPU Configuration<a class="headerlink" href="#gpu-configuration" title="Link to this heading">#</a></h2>
 <p>The deploy script uses the <code class="docutils literal notranslate"><span class="pre">NEMOCLAW_GPU</span></code> environment variable to select the GPU type.
@@ -566,6 +586,7 @@ Set this variable before running <code class="docutils literal notranslate"><spa
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-to-the-remote-sandbox">Connect to the Remote Sandbox</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monitor-the-remote-sandbox">Monitor the Remote Sandbox</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verify-inference">Verify Inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remote-dashboard-access">Remote Dashboard Access</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gpu-configuration">GPU Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#related-topics">Related Topics</a></li>
 </ul>
