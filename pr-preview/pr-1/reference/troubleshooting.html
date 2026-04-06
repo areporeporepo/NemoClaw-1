@@ -334,6 +334,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inference</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../inference/inference-options.html">Inference Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference/use-local-inference.html">Use Local Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../inference/switch-inference-providers.html">Switch Inference Providers</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Network Policy</span></p>
@@ -364,7 +366,6 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commands.html">Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference-profiles.html">Inference Profiles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network-policies.html">Network Policies</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Troubleshooting</a></li>
 </ul>
@@ -516,13 +517,14 @@ Then retry onboarding.</p>
 <h2>Onboarding<a class="headerlink" href="#onboarding" title="Link to this heading">#</a></h2>
 <section id="cgroup-v2-errors-during-onboard">
 <h3>Cgroup v2 errors during onboard<a class="headerlink" href="#cgroup-v2-errors-during-onboard" title="Link to this heading">#</a></h3>
-<p>On Ubuntu 24.04, DGX Spark, and WSL2, Docker may not be configured for cgroup v2 delegation.
-The onboard preflight check detects this and fails with a clear error message.</p>
-<p>Run the Spark setup script to fix the Docker cgroup configuration, then retry onboarding:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nemoclaw<span class="w"> </span>setup-spark
-<span class="gp">$ </span>nemoclaw<span class="w"> </span>onboard
+<p>Older NemoClaw releases relied on a Docker cgroup workaround on Ubuntu 24.04, DGX Spark, and WSL2.
+Current OpenShell releases handle that behavior themselves, so NemoClaw no longer requires a Spark-specific setup step.</p>
+<p>If onboarding reports that Docker is missing or unreachable, fix Docker first and retry onboarding:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>onboard
 </pre></div>
 </div>
+<p>If you are using Podman, NemoClaw warns and continues, but OpenShell officially documents Docker-based runtimes only.
+If onboarding or sandbox lifecycle fails, switch to Docker Desktop, Colima, or Docker Engine and rerun onboarding.</p>
 </section>
 <section id="invalid-sandbox-name">
 <h3>Invalid sandbox name<a class="headerlink" href="#invalid-sandbox-name" title="Link to this heading">#</a></h3>

@@ -334,6 +334,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inference</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../inference/inference-options.html">Inference Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference/use-local-inference.html">Use Local Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../inference/switch-inference-providers.html">Switch Inference Providers</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Network Policy</span></p>
@@ -364,7 +366,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../reference/architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/commands.html">Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/inference-profiles.html">Inference Profiles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/network-policies.html">Network Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/troubleshooting.html">Troubleshooting</a></li>
 </ul>
@@ -431,48 +432,51 @@
 <section class="tex2jax_ignore mathjax_ignore" id="deploy-nemoclaw-to-a-remote-gpu-instance">
 <h1>Deploy NemoClaw to a Remote GPU Instance<a class="headerlink" href="#deploy-nemoclaw-to-a-remote-gpu-instance" title="Link to this heading">#</a></h1>
 <p>Run NemoClaw on a remote GPU instance through <a class="reference external" href="https://brev.nvidia.com" rel="noreferer noopener" target="_blank">Brev</a>.
-The deploy command provisions the VM, installs dependencies, and connects you to a running sandbox.</p>
+The preferred path is to provision the VM, run the standard NemoClaw installer on that host, and then run <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code>.</p>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
-<p>If your Brev instance is already up and you want to try NemoClaw immediately, start with the sandbox chat flow:</p>
+<p>If your Brev instance is already up and has already been onboarded with a sandbox, start with the standard sandbox chat flow:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>my-assistant<span class="w"> </span>connect
 <span class="gp">$ </span>openclaw<span class="w"> </span>tui
 </pre></div>
 </div>
-<p>This gets you into the sandbox shell first and opens the OpenClaw chat UI right away.</p>
-<p>If you are connecting from your local machine and still need to provision the remote VM, use <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span> <span class="pre">&lt;instance-name&gt;</span></code> as described below.</p>
+<p>This gets you into the sandbox shell first and opens the OpenClaw chat UI right away.
+If the VM is fresh, run the standard installer on that host and then run <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> before trying <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">my-assistant</span> <span class="pre">connect</span></code>.</p>
+<p>If you are connecting from your local machine and still need to provision the remote VM, you can still use <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span> <span class="pre">&lt;instance-name&gt;</span></code> as the legacy compatibility path described below.</p>
 </section>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>The <a class="reference external" href="https://brev.nvidia.com" rel="noreferer noopener" target="_blank">Brev CLI</a> installed and authenticated.</p></li>
-<li><p>An NVIDIA API key from <a class="reference external" href="https://build.nvidia.com" rel="noreferer noopener" target="_blank">build.nvidia.com</a>.</p></li>
-<li><p>NemoClaw installed locally. Follow the <a class="reference internal" href="../get-started/quickstart.html"><span class="std std-doc">Quickstart</span></a> install steps.</p></li>
+<li><p>A provider credential for the inference backend you want to use during onboarding.</p></li>
+<li><p>NemoClaw installed locally if you plan to use the deprecated <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code> wrapper. Otherwise, install NemoClaw directly on the remote host after provisioning it.</p></li>
 </ul>
 </section>
 <section id="deploy-the-instance">
 <h2>Deploy the Instance<a class="headerlink" href="#deploy-the-instance" title="Link to this heading">#</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code> command is experimental and may not work as expected.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code> command is deprecated.
+Prefer provisioning the remote host separately, then running the standard NemoClaw installer and <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> on that host.</p>
 </div>
-<p>Create a Brev instance and run the NemoClaw setup:</p>
+<p>Create a Brev instance and run the legacy compatibility flow:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>deploy<span class="w"> </span>&lt;instance-name&gt;
 </pre></div>
 </div>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;instance-name&gt;</span></code> with a name for your remote instance, for example <code class="docutils literal notranslate"><span class="pre">my-gpu-box</span></code>.</p>
-<p>The deploy script performs the following steps on the VM:</p>
+<p>The legacy compatibility flow performs the following steps on the VM:</p>
 <ol class="arabic simple">
 <li><p>Installs Docker and the NVIDIA Container Toolkit if a GPU is present.</p></li>
 <li><p>Installs the OpenShell CLI.</p></li>
 <li><p>Runs <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> (the setup wizard) to create the gateway, register providers, and launch the sandbox.</p></li>
-<li><p>Starts auxiliary services, such as the Telegram bridge and cloudflared tunnel.</p></li>
+<li><p>Starts auxiliary services, such as the Telegram bridge and cloudflared tunnel, when those tools are available.</p></li>
 </ol>
+<p>By default, the compatibility wrapper asks Brev to provision on <code class="docutils literal notranslate"><span class="pre">gcp</span></code>. Override this with <code class="docutils literal notranslate"><span class="pre">NEMOCLAW_BREV_PROVIDER</span></code> if you need a different Brev cloud provider.</p>
 </section>
 <section id="connect-to-the-remote-sandbox">
 <h2>Connect to the Remote Sandbox<a class="headerlink" href="#connect-to-the-remote-sandbox" title="Link to this heading">#</a></h2>
 <p>After deployment finishes, the deploy command opens an interactive shell inside the remote sandbox.
-To reconnect after closing the session, run the deploy command again:</p>
+To reconnect after closing the session, run the command again:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>deploy<span class="w"> </span>&lt;instance-name&gt;
 </pre></div>
 </div>
@@ -507,8 +511,8 @@ default), so no extra configuration is needed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>On Brev, set <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> in the launchable environment configuration so it is
-available when the setup script builds the sandbox image.  If <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> is
-not set on a headless host, <code class="docutils literal notranslate"><span class="pre">brev-setup.sh</span></code> prints a warning.</p>
+available when the installer builds the sandbox image. If <code class="docutils literal notranslate"><span class="pre">CHAT_UI_URL</span></code> is not
+set on a headless host, the compatibility wrapper prints a warning.</p>
 </div>
 </section>
 <section id="gpu-configuration">

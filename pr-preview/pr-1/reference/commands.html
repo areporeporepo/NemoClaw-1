@@ -58,7 +58,7 @@
     <link rel="icon" href="../_static/favicon.png"/>
 
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inference Profiles" href="inference-profiles.html" />
+    <link rel="next" title="Network Policies" href="network-policies.html" />
     <link rel="prev" title="Architecture" href="architecture.html" />
 
 
@@ -334,6 +334,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inference</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../inference/inference-options.html">Inference Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference/use-local-inference.html">Use Local Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../inference/switch-inference-providers.html">Switch Inference Providers</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Network Policy</span></p>
@@ -364,7 +366,6 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inference-profiles.html">Inference Profiles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="network-policies.html">Network Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
@@ -487,6 +488,10 @@ Use this command for new installs and for recreating a sandbox after changes to 
 Supported non-experimental choices include NVIDIA Endpoints, OpenAI, Anthropic, Google Gemini, and compatible OpenAI or Anthropic endpoints.
 Credentials are stored in <code class="docutils literal notranslate"><span class="pre">~/.nemoclaw/credentials.json</span></code>.
 The legacy <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">setup</span></code> command is deprecated; use <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> instead.</p>
+<p>If you enable Brave Search during onboarding, NemoClaw currently stores the Brave API key in the sandbox’s OpenClaw configuration.
+That means the OpenClaw agent can read the key.
+NemoClaw explores an OpenShell-hosted credential path first, but the current OpenClaw Brave runtime does not consume that path end to end yet.
+Treat Brave Search as an explicit opt-in and use a dedicated low-privilege Brave key.</p>
 <p>For non-interactive onboarding, you must explicitly accept the third-party software notice:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>onboard<span class="w"> </span>--non-interactive<span class="w"> </span>--yes-i-accept-third-party-software
 </pre></div>
@@ -495,11 +500,17 @@ The legacy <code class="docutils literal notranslate"><span class="pre">nemoclaw
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>nemoclaw<span class="w"> </span>onboard<span class="w"> </span>--non-interactive
 </pre></div>
 </div>
+<p>To enable Brave Search in non-interactive mode, set:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nv">BRAVE_API_KEY</span><span class="o">=</span>...<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>nemoclaw<span class="w"> </span>onboard<span class="w"> </span>--non-interactive
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BRAVE_API_KEY</span></code> enables Brave Search in non-interactive mode and also enables <code class="docutils literal notranslate"><span class="pre">web_fetch</span></code>.</p>
 <p>The wizard prompts for a sandbox name.
 Names must follow RFC 1123 subdomain rules: lowercase alphanumeric characters and hyphens only, and must start and end with an alphanumeric character.
 Uppercase letters are automatically lowercased.</p>
 <p>Before creating the gateway, the wizard runs preflight checks.
-On systems with cgroup v2 (Ubuntu 24.04, DGX Spark, WSL2), it verifies that Docker is configured with <code class="docutils literal notranslate"><span class="pre">&quot;default-cgroupns-mode&quot;:</span> <span class="pre">&quot;host&quot;</span></code> and provides fix instructions if the setting is missing.</p>
+It verifies that Docker is reachable, warns on unsupported runtimes such as Podman, and prints host remediation guidance when prerequisites are missing.</p>
 </section>
 <section id="nemoclaw-list">
 <h3><code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">list</span></code><a class="headerlink" href="#nemoclaw-list" title="Link to this heading">#</a></h3>
@@ -512,10 +523,11 @@ On systems with cgroup v2 (Ubuntu 24.04, DGX Spark, WSL2), it verifies that Dock
 <h3><code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code><a class="headerlink" href="#nemoclaw-deploy" title="Link to this heading">#</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code> command is experimental and may not work as expected.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">deploy</span></code> command is deprecated.
+Prefer provisioning the remote host separately, then running the standard NemoClaw installer and <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> on that host.</p>
 </div>
 <p>Deploy NemoClaw to a remote GPU instance through <a class="reference external" href="https://brev.nvidia.com" rel="noreferer noopener" target="_blank">Brev</a>.
-The deploy script installs Docker, NVIDIA Container Toolkit if a GPU is present, and OpenShell on the VM, then runs <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> and connects to the sandbox.</p>
+This command remains as a compatibility wrapper for the older Brev-specific bootstrap flow.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>deploy<span class="w"> </span>&lt;instance-name&gt;
 </pre></div>
 </div>
@@ -604,11 +616,13 @@ Run this on the host where the sandbox is running.</p>
 </section>
 <section id="nemoclaw-setup-spark">
 <h3><code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">setup-spark</span></code><a class="headerlink" href="#nemoclaw-setup-spark" title="Link to this heading">#</a></h3>
-<p>Set up NemoClaw on DGX Spark.
-This command applies cgroup v2 and Docker fixes required for Ubuntu 24.04.
-Run with <code class="docutils literal notranslate"><span class="pre">sudo</span></code> on the Spark host.
-After the fixes complete, the script prompts you to run <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> to continue setup.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nemoclaw<span class="w"> </span>setup-spark
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">setup-spark</span></code> command is deprecated.
+Use the standard installer and run <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code> instead, because current OpenShell releases handle the older DGX Spark cgroup behavior.</p>
+</div>
+<p>This command remains as a compatibility alias to <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>nemoclaw<span class="w"> </span>setup-spark
 </pre></div>
 </div>
 </section>
@@ -698,11 +712,11 @@ Running <code class="docutils literal notranslate"><span class="pre">nemoclaw</s
       </div>
     </a>
     <a class="right-next"
-       href="inference-profiles.html"
+       href="network-policies.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Inference Profiles</p>
+        <p class="prev-next-title">Network Policies</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -58,7 +58,7 @@
     <link rel="icon" href="../_static/favicon.png"/>
 
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Switch Inference Models at Runtime" href="../inference/switch-inference-providers.html" />
+    <link rel="next" title="Inference Options" href="../inference/inference-options.html" />
     <link rel="prev" title="Release Notes" href="../about/release-notes.html" />
 
 
@@ -334,6 +334,8 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inference</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../inference/inference-options.html">Inference Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inference/use-local-inference.html">Use Local Inference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../inference/switch-inference-providers.html">Switch Inference Providers</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Network Policy</span></p>
@@ -364,7 +366,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../reference/architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/commands.html">Commands</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/inference-profiles.html">Inference Profiles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/network-policies.html">Network Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/troubleshooting.html">Troubleshooting</a></li>
 </ul>
@@ -515,8 +516,8 @@ File issues and feedback through the GitHub repository as the project continues 
 <td><p>Install Xcode Command Line Tools (<code class="docutils literal notranslate"><span class="pre">xcode-select</span> <span class="pre">--install</span></code>) and start the runtime before running the installer.</p></td>
 </tr>
 <tr class="row-even"><td><p>macOS (Intel)</p></td>
-<td><p>Podman</p></td>
-<td><p>Not supported yet. Depends on OpenShell support for Podman on macOS.</p></td>
+<td><p>Docker Desktop</p></td>
+<td><p>Start the runtime before running the installer.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Windows WSL</p></td>
 <td><p>Docker Desktop (WSL backend)</p></td>
@@ -524,7 +525,7 @@ File issues and feedback through the GitHub repository as the project continues 
 </tr>
 <tr class="row-even"><td><p>DGX Spark</p></td>
 <td><p>Docker</p></td>
-<td><p>Refer to the <a class="reference external" href="https://github.com/NVIDIA/NemoClaw/blob/main/spark-install.md" rel="noreferer noopener" target="_blank">DGX Spark setup guide</a> for cgroup v2 and Docker configuration.</p></td>
+<td><p>Use the standard installer and <code class="docutils literal notranslate"><span class="pre">nemoclaw</span> <span class="pre">onboard</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -636,11 +637,11 @@ Logs:        nemoclaw my-assistant logs --follow
       </div>
     </a>
     <a class="right-next"
-       href="../inference/switch-inference-providers.html"
+       href="../inference/inference-options.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Switch Inference Models at Runtime</p>
+        <p class="prev-next-title">Inference Options</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
